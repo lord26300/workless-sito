@@ -103,16 +103,6 @@ const CpuArchitecture = ({
           </g>
         )}
         <rect x="85" y="40" width="30" height="20" rx="2" fill="#181818" filter="url(#cpu-light-shadow)" />
-        <text
-          x="90"
-          y="52.5"
-          fontSize="6"
-          fill={animateText ? 'url(#cpu-text-gradient)' : 'white'}
-          fontWeight="600"
-          letterSpacing="0.05em"
-        >
-          {text}
-        </text>
       </g>
 
       <defs>
