@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -50,9 +50,24 @@ export function RadialOrbitalTimeline({ nodes, className }: RadialOrbitalTimelin
   const mousePosRef    = useRef<{ x: number; y: number } | null>(null)
   const speedFactorRef = useRef(1)
   const cardRef        = useRef<HTMLDivElement>(null)
+  const containerRef   = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
 
   // Tiene selectedIdRef sincronizzato con lo stato React
   useEffect(() => { selectedIdRef.current = selectedId }, [selectedId])
+
+  // Scala il diagramma orbitale in base alla larghezza disponibile
+  const updateScale = useCallback(() => {
+    const w = containerRef.current?.getBoundingClientRect().width ?? 420
+    setScale(Math.min(1, w / 420))
+  }, [])
+
+  useEffect(() => {
+    updateScale()
+    const ro = new ResizeObserver(updateScale)
+    if (containerRef.current) ro.observe(containerRef.current)
+    return () => ro.disconnect()
+  }, [updateScale])
 
   // Scroll alla card quando un nodo viene selezionato
   useEffect(() => {
@@ -112,12 +127,14 @@ export function RadialOrbitalTimeline({ nodes, className }: RadialOrbitalTimelin
 
   return (
     <div
+      ref={containerRef}
       className={cn('flex flex-col items-center gap-8', className)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       {/* ── Diagramma orbitale ──────────────────────────────────── */}
-      <div className="relative" style={{ width: 420, height: 460 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: `${-(460 * (1 - scale))}px` }}>
+      <div className="relative" style={{ width: 420, height: 460, transform: `scale(${scale})`, transformOrigin: 'top center', flexShrink: 0 }}>
 
         {/* SVG: anello interno statico + spoke/pallini dinamici */}
         <svg
@@ -229,6 +246,7 @@ export function RadialOrbitalTimeline({ nodes, className }: RadialOrbitalTimelin
             </div>
           )
         })}
+      </div>
       </div>
 
       {/* ── Card di dettaglio ───────────────────────────────────── */}

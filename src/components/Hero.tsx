@@ -34,7 +34,7 @@ export default function Hero() {
           </div>
 
           {/* Titolo */}
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tight leading-none">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-none">
             <AnimatedTitle text="Workless" />
           </h1>
 
